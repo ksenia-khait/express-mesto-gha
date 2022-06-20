@@ -12,7 +12,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   family: 4,
 });
 
-app.use('/cards', require('./routes/cardss'));
+app.use('/', require('./routes/users'));
+app.use('/', require('./routes/cardss'));
 
 app.listen(PORT, () => {
   console.log('started on', PORT);
