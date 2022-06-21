@@ -3,33 +3,72 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => console.log(`Произошла ошибка: ${err.name} ${err.message}`));
+    .catch(() => res.status(500).send({ message: 'Ошибка по умоланию' }));
 };
 
 module.exports.createCard = (req, res) => {
+  console.log(req.user._id);
   const { name, link } = req.body;
 
   Card.create({ name, link })
     .then((card) => {
       res.status(200).send({ data: card });
     })
-    .catch((err) => console.log(`Произошла ошибка: ${err.name} ${err.message}`));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+      }
+      return res.status(500).send({ message: 'Ошибка по умоланию' });
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params._id)
-    .then((card) => res.status(200).send({ data: card }))
-    .catch((err) => console.log(`Произошла ошибка: ${err.name} ${err.message}`));
+  Card.findByIdAndRemove(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+      }
+      return res.status(200).send({ data: card });
+    })
+    .catch(() => res.status(500).send({ message: 'Ошибка по умоланию' }));
 };
 
-module.exports.addCardLike = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId)
-    .then((card) => res.status(200).send({ data: card }))
-    .catch((err) => console.log(`Произошла ошибка: ${err.name} ${err.message}`));
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+      }
+      return res.status(200).send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+      }
+      return res.status(500).send({ message: 'Ошибка по умоланию' });
+    });
 };
 
-module.exports.removeCardLike = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId)
-    .then((card) => res.status(200).send({ data: card }))
-    .catch((err) => console.log(`Произошла ошибка: ${err.name} ${err.message}`));
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+      }
+      return res.status(200).send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+      }
+      return res.status(500).send({ message: 'Ошибка по умоланию' });
+    });
 };
