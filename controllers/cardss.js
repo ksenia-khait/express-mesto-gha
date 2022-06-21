@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res) => {
       if (!card) {
         return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
       }
-      return res.status(200).send({ data: card });
+      return res.status(200).send(card);
     })
     .catch(() => res.status(500).send({ message: 'Ошибка по умоланию' }));
 };
