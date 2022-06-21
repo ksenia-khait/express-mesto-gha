@@ -19,7 +19,12 @@ module.exports.getUserById = (req, res) => {
       }
       return res.status(200).send(user);
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка по умоланию!' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+      }
+      return res.status(500).send({ message: 'Ошибка по умоланию' });
+    });
 };
 
 module.exports.createUser = (req, res) => {
