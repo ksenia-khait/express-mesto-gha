@@ -57,6 +57,9 @@ module.exports.updateProfile = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       }
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      }
       return res.status(500).send({ message: 'Ошибка по умоланию' });
     });
 };
@@ -74,6 +77,9 @@ module.exports.updateAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные!' });
+      }
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       }
       return res.status(500).send({ message: 'Ошибка по умоланию!' });
     });
