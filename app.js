@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cardss'));
 app.use('*', (req, res) => {
-res.status(400).send({ message: 'Страница не найдена' })ж
+res.status(404).send({ message: 'Страница не найдена' });
 });
 
 app.listen(PORT, () => {
