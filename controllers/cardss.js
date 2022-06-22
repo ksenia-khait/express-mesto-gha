@@ -10,7 +10,7 @@ module.exports.createCard = (req, res) => {
   console.log(req.user._id);
   const { name, link } = req.body;
 
-  Card.create({ name, link })
+  Card.create(req.user._id, { name, link })
     .then((card) => {
       res.status(200).send({ data: card });
     })
