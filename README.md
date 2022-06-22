@@ -1,4 +1,4 @@
-[![Tests 13 sprint](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
+[![Tests 13 sprint](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg?branch=main)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests 14 sprint](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg?branch=main)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
 # Проект Mesto фронтенд + бэкенд
 
 
