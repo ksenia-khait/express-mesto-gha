@@ -41,10 +41,11 @@ module.exports.createUser = (req, res) => {
 };
 
 module.exports.updateProfile = (req, res) => {
+  const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name: req.body.name, about: req.body.about },
-    { new: true },
+    { name, about },
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (!user) {
@@ -53,8 +54,8 @@ module.exports.updateProfile = (req, res) => {
       return res.status(200).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные!' });
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       }
       return res.status(500).send({ message: 'Ошибка по умоланию' });
     });
