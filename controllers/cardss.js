@@ -76,6 +76,9 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
       }
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+      }
       return res.status(500).send({ message: 'Ошибка по умоланию' });
     });
 };
