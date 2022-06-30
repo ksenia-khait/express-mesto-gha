@@ -43,7 +43,7 @@ module.exports.login = (req, res, next) => {
 module.exports.getUser = (req, res, next) => {
   User.find({})
     .then((user) => res.status(200).send(user))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports.getAuthedUserInfo = (req, res, next) => {
