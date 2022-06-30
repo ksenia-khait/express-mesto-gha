@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { regEx } = require('../constants/constants')
+const  regEx = require('../constants/constants')
 
 const userSchema = new mongoose.Schema({
   name: {
