@@ -54,7 +54,7 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports.getUserById = (req, res, next) => {
@@ -93,7 +93,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
-      return next(err);
+      next(err);
     });
 };
 
