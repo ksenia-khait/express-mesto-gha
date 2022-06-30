@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/notFoundError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -28,7 +29,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
       return res.status(200).send(card);
     })
@@ -48,7 +49,7 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
       return res.status(200).send({ data: card });
     })
@@ -71,7 +72,7 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
       return res.status(200).send({ data: card });
     })
