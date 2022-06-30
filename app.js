@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const validator = require('validator');
-const { createUser } = require('./controllers/users');
+// const validator = require('validator');
+const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
 const app = express();

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+
 const regEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/;
 
 const userSchema = new mongoose.Schema({
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     name: 'Картинка',
     validate: {
-      validator: function (v) {
+      validator: function val(v) {
         return regEx.test(v);
       },
       message: 'Введите ссылку на картинку',
