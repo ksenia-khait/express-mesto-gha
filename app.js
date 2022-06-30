@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 // const validator = require('validator');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/notFoundError');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -21,7 +22,7 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cardss'));
 
-app.use('*', (req, res) => {
+app.use('*', (req, res, next) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
 
