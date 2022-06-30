@@ -42,26 +42,22 @@ module.exports.deleteCard = (req, res, next) => {
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => new NotFoundError('Передан несуществующий _id карточки'))
     .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
-      }
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+      } else {
+        next(err);
       }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
-      }
-      return res.status(500).send({ message: 'Ошибка по умоланию' });
     });
 };
 
@@ -78,12 +74,10 @@ module.exports.dislikeCard = (req, res, next) => {
       return res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+      } else {
+        next(err);
       }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
-      }
-      return res.status(500).send({ message: 'Ошибка по умоланию' });
     });
 };
