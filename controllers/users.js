@@ -40,10 +40,10 @@ module.exports.login = (req, res, next) => {
     .catch(() => next(new NotAuthorizedError('Неверно указана почта или пароль')));
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.find({})
     .then((user) => res.status(200).send(user))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умоланию' }));
+    .catch((err) => next(err));
 };
 
 module.exports.getAuthedUserInfo = (req, res, next) => {
