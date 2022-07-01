@@ -13,21 +13,6 @@ module.exports.login = (req, res, next) => {
     password,
   } = req.body;
 
-  User.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return res.send({ message: 'Всё верно!' });
-    })
-    .catch(() => next(new NotAuthorizedError('Неверно указана почта или пароль')));
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
