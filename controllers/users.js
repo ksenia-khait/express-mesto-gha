@@ -6,6 +6,11 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/badRequestError');
 const NotAuthorizedError = require('../errors/notAuthorizedError');
 const NotFoundError = require('../errors/notFoundError');
+const ConflictError = require('../errors/conflictError');
+
+const DefaultError = require('../errors/defaultError');
+const MONGO_DUPLICATE_ERROR_CODE = 11000;
+const SALT_ROUNDS = 8;
 
 module.exports.login = (req, res, next) => {
   const {
@@ -27,7 +32,8 @@ module.exports.login = (req, res, next) => {
 
 module.exports.getUser = (req, res, next) => {
   User.find({})
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(200)
+      .send(user))
     .catch(next);
 };
 
@@ -48,7 +54,7 @@ module.exports.getUserById = (req, res, next) => {
       if (user === null) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
       }
-      return res.status(200).send(user);
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -63,37 +69,54 @@ module.exports.createUser = (req, res, next) => {
     name,
     about,
     avatar,
+    email,
+    password,
   } = req.body;
 
-  bcrypt.hash(req.body.password, 8)
+  if (!email || !password) {
+    return next(new BadRequestError('Не передан email или password'));
+  }
+
+  bcrypt
+    .hash(password, SALT_ROUNDS)
     .then((hash) => User.create({
       name,
       about,
       avatar,
-      email: req.body.email,
+      email,
       password: hash,
     }))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        return res.status(409)
+          .send({ message: 'Данный email уже занят' });
       }
-      next(err);
+      return next(new DefaultError('Ошибка сервера'));
     });
 };
 
 module.exports.updateProfile = (req, res, next) => {
-  const { name, about } = req.body;
+  const {
+    name,
+    about,
+  } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
-    { new: true, runValidators: true },
+    {
+      name,
+      about,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
       }
-      return res.status(200).send({ data: user });
+      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -114,7 +137,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
       }
-      return res.status(200).send(user);
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
