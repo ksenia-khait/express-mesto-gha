@@ -7,6 +7,7 @@ const BadRequestError = require('../errors/badRequestError');
 const NotAuthorizedError = require('../errors/notAuthorizedError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
+const ForbiddenError = require('../errors/forbiddenError');
 
 const DefaultError = require('../errors/defaultError');
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
@@ -18,16 +19,43 @@ module.exports.login = (req, res, next) => {
     password,
   } = req.body;
 
+  if (!email || !password) {
+    return next(new BadRequestError('Не передан email или password'));
+  }
+  User
+    .findOne({ email })
+    .then((user) => {
+      if (!user) {
+        throw new ForbiddenError('Неправильный email или пароль');
+      }
+      // return bcrypt.compare(password, user.password);
+      return Promise.all([
+        user,
+        bcrypt.compare(password, user.password)
+      ]);
+    })
+    .then(([user, isPasswordCorrect]) => {
+      if (!isPasswordCorrect) {
+        return next(new DefaultError('Ошибка сервера'));
+      }
+
+    })
+    .catch(() => {
+      if () {
+        return new ForbiddenError('Неправильный email или пароль');
+      }
+      next(new DefaultError('Ошибка сервера'));
+    });
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        'very-secret-key',
         { expiresIn: '7d' },
       );
       res.send({ token });
     })
-    .catch(() => next(new NotAuthorizedError('Неверно указана почта или пароль')));
+    .catch(() => next(new NotAuthorizedError('Неправильный email или пароль')));
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -64,6 +92,7 @@ module.exports.getUserById = (req, res, next) => {
     });
 };
 
+// eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res, next) => {
   const {
     name,
