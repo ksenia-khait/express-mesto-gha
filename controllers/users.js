@@ -22,7 +22,9 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   if (!email || !password) {
-    return next(new BadRequestError('Не передан email или пароль'));
+    const err = new Error('Не передан email или пароль');
+    err.statusCode = 403;
+    throw err;
   }
 
   bcrypt
@@ -51,8 +53,9 @@ module.exports.login = (req, res) => {
   } = req.body;
 
   if (!email || !password) {
-    return res.status(400)
-      .send({ message: 'Не передан email или пароль' });
+    const err = new Error('Не передан email или пароль');
+    err.statusCode = 400;
+    throw err;
   }
   User
     .findOne({ email })
@@ -114,7 +117,7 @@ module.exports.getUserById = (req, res, next) => {
     });
 };
 
-module.exports.updateProfile = (req, res, next) => {
+module.exports.updateProfile = (req, res) => {
   const {
     name,
     about,
@@ -132,22 +135,20 @@ module.exports.updateProfile = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь с указанным _id не найден');
+        const err = new Error('Пользователь с указанным _id не найден');
+        err.statusCode = 404;
+        throw err;
       }
       return res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      }
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      }
-      return next(err);
+    .catch(() => {
+      const err = new Error('Переданы некорректные данные при обновлении профиля');
+      err.statusCode = 400;
+      throw err;
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
@@ -157,13 +158,9 @@ module.exports.updateAvatar = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные!'));
-      }
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      }
-      return next(err);
+    .catch(() => {
+      const err = new Error('Переданы некорректные данные при обновлении профиля');
+      err.statusCode = 400;
+      throw err;
     });
 };
