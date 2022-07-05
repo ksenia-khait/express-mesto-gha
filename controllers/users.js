@@ -39,12 +39,11 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         throw new ConflictError('Данный email уже занят');
-      } else {
-        if (err.name === 'CastError' || err.name === 'ValidationError') {
-          return new BadRequestError('Переданы некорректные данные при создании пользователя');
-        }
-        return next(err);
       }
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+      }
+      return next(err);
     });
 };
 
