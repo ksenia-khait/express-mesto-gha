@@ -37,14 +37,16 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
+      if (req.user._id !== card.owner._id.toString()) {
+        throw new ForbiddenError('Вы не можете удалять чужие карточки');
+      }
+      return Card.findByIdAndRemove(req.params.cardId);
+    })
+    .then((card) => {
       if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки');
       }
-      if (card.owner._id.toString() !== req.user._id) {
-        throw new ForbiddenError('Вы не можете удалять чужие карточки');
-      }
-      return Card.findByIdAndRemove(req.params.cardId)
-        .then((c) => res.send(c));
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
