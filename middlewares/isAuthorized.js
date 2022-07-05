@@ -5,7 +5,7 @@ const UnauthorizedError = require('../errors/unathorizedError');
 const isAuthorized = (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth) {
-    UnauthorizedError();
+    throw new UnauthorizedError('Необходимо пройти аторизацию');
   }
   const token = auth.replace('Bearer ', '');
   try {
@@ -13,13 +13,13 @@ const isAuthorized = (req, res, next) => {
     User.findOne({ email: payload.email })
       .then((user) => {
         if (!user) {
-          UnauthorizedError();
+          throw new UnauthorizedError('Необходимо пройти аторизацию');
         }
         req.user = { id: user._id };
         next();
       });
   } catch (err) {
-    UnauthorizedError();
+    throw new UnauthorizedError('Необходимо пройти аторизацию');
   }
 };
 
