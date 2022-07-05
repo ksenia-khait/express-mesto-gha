@@ -5,7 +5,7 @@ const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const { isAuthorized } = require('./middlewares/isAuthorized');
 const { validateLogin, validateCreateUser } = require('./middlewares/validations');
-
+const NotFoundError = require('./errors/notFoundError');
 const app = express();
 const { PORT = 3000 } = process.env;
 
@@ -20,7 +20,9 @@ app.post('/', validateCreateUser, createUser);
 app.use('/', isAuthorized, require('./routes/users'));
 app.use('/', isAuthorized, require('./routes/cardss'));
 
-app.use('*', (req, res) => res.status(404).send({ message: 'Страница не найдена' }));
+app.use('*', () => {
+  throw new NotFoundError('Страница не найдена')ж
+});
 
 app.use(errors());
 
