@@ -1,7 +1,7 @@
-const ConflictError = () => {
+const UnauthorizedError = () => {
   const error = new Error('Авторизуйтесь для доступа');
-  error.statusCode = 409;
+  error.statusCode = 401;
   throw error;
 };
 
-module.exports = ConflictError;
+module.exports = UnauthorizedError;

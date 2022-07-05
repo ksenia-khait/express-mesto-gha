@@ -1,61 +1,83 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 /* Errors */
 const BadRequestError = require('../errors/badRequestError');
-const NotAuthorizedError = require('../errors/notAuthorizedError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
-const ForbiddenError = require('../errors/forbiddenError');
+// const ForbiddenError = require('../errors/forbiddenError');
+const { generateToken } = require('../helpers/jwtt');
 
-const DefaultError = require('../errors/defaultError');
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 8;
 
-module.exports.login = (req, res, next) => {
+// eslint-disable-next-line consistent-return
+module.exports.createUser = (req, res, next) => {
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+
+  if (!email || !password) {
+    return next(new BadRequestError('Не передан email или пароль'));
+  }
+
+  bcrypt
+    .hash(password, SALT_ROUNDS)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        ConflictError();
+      }
+      throw err;
+    });
+};
+
+// eslint-disable-next-line consistent-return
+module.exports.login = (req, res) => {
   const {
     email,
     password,
   } = req.body;
 
   if (!email || !password) {
-    return next(new BadRequestError('Не передан email или password'));
+    return res.status(400)
+      .send({ message: 'Не передан email или пароль' });
   }
   User
     .findOne({ email })
     .then((user) => {
       if (!user) {
-        throw new ForbiddenError('Неправильный email или пароль');
+        const err = new Error('Не передан email или пароль');
+        err.statusCode = 403;
+        throw err;
       }
-      // return bcrypt.compare(password, user.password);
       return Promise.all([
         user,
-        bcrypt.compare(password, user.password)
+        bcrypt.compare(password, user.password),
       ]);
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        return next(new DefaultError('Ошибка сервера'));
+        const err = new Error('Не передан email или пароль');
+        err.statusCode = 403;
+        throw err;
       }
-
+      return generateToken({ email: user.email }, { expiresIn: '7d' });
     })
-    .catch(() => {
-      if () {
-        return new ForbiddenError('Неправильный email или пароль');
-      }
-      next(new DefaultError('Ошибка сервера'));
-    });
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        'very-secret-key',
-        { expiresIn: '7d' },
-      );
+    .then((token) => {
       res.send({ token });
-    })
-    .catch(() => next(new NotAuthorizedError('Неправильный email или пароль')));
+    });
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -89,39 +111,6 @@ module.exports.getUserById = (req, res, next) => {
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       return next(err);
-    });
-};
-
-// eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res, next) => {
-  const {
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  } = req.body;
-
-  if (!email || !password) {
-    return next(new BadRequestError('Не передан email или password'));
-  }
-
-  bcrypt
-    .hash(password, SALT_ROUNDS)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        return res.status(409)
-          .send({ message: 'Данный email уже занят' });
-      }
-      return next(new DefaultError('Ошибка сервера'));
     });
 };
 
