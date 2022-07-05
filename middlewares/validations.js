@@ -19,7 +19,7 @@ const validateCreateUser = celebrate({
           if (regEx.test(value)) {
             return value;
           }
-          return helpers.message('Некорректный формат ссылки');
+          return helpers.message({message: 'Некорректный формат ссылки'});
         }),
       email: Joi.string()
         .required()
