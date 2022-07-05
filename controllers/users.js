@@ -12,7 +12,7 @@ const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 8;
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const {
     name,
     about,
