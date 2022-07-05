@@ -6,6 +6,7 @@ const { createUser, login } = require('./controllers/users');
 const { isAuthorized } = require('./middlewares/isAuthorized');
 const { validateLogin, validateCreateUser } = require('./middlewares/validations');
 const NotFoundError = require('./errors/notFoundError');
+
 const app = express();
 const { PORT = 3000 } = process.env;
 
@@ -20,9 +21,9 @@ app.post('/', validateCreateUser, createUser);
 app.use('/', isAuthorized, require('./routes/users'));
 app.use('/', isAuthorized, require('./routes/cardss'));
 
-app.use('*', () => {
-  throw new NotFoundError('Страница не найдена')ж
-});
+// app.use('*', () => {
+//   throw new NotFoundError('Страница не найдена');
+// });
 
 app.use(errors());
 
@@ -35,7 +36,9 @@ app.use((err, req, res, next) => {
   return res.status(500).send({ message: 'Что-то пошло не так' });
 });
 
-app.listen(PORT,
+app.listen(
+  PORT,
   () => {
     console.log('started on', PORT);
-  });
+  },
+);
