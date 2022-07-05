@@ -5,7 +5,7 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
-// const ForbiddenError = require('../errors/forbiddenError');
+const ForbiddenError = require('../errors/forbiddenError');
 const { generateToken } = require('../helpers/jwtt');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
@@ -22,9 +22,7 @@ module.exports.createUser = (req, res) => {
   } = req.body;
 
   if (!email || !password) {
-    const err = new Error('Не передан email или пароль');
-    err.statusCode = 403;
-    throw err;
+    throw new ForbiddenError('Не передан email или пароль');
   }
 
   bcrypt
@@ -39,7 +37,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        ConflictError();
+        throw new ConflictError('Данный email уже занят');
       }
       throw err;
     });
@@ -53,17 +51,13 @@ module.exports.login = (req, res) => {
   } = req.body;
 
   if (!email || !password) {
-    const err = new Error('Не передан email или пароль');
-    err.statusCode = 400;
-    throw err;
+    throw new BadRequestError('Не передан email или пароль');
   }
   User
     .findOne({ email })
     .then((user) => {
       if (!user) {
-        const err = new Error('Не передан email или пароль');
-        err.statusCode = 403;
-        throw err;
+        throw new ForbiddenError('Не передан email или пароль');
       }
       return Promise.all([
         user,
@@ -72,9 +66,7 @@ module.exports.login = (req, res) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        const err = new Error('Не передан email или пароль');
-        err.statusCode = 403;
-        throw err;
+        throw new ForbiddenError('Не передан email или пароль');
       }
       return generateToken({ email: user.email }, { expiresIn: '7d' });
     })
@@ -110,14 +102,14 @@ module.exports.getUserById = (req, res, next) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        return new BadRequestError('Переданы некорректные данные при создании пользователя');
       }
       return next(err);
     });
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const {
     name,
     about,
@@ -135,20 +127,19 @@ module.exports.updateProfile = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        const err = new Error('Пользователь с указанным _id не найден');
-        err.statusCode = 404;
-        throw err;
+        throw new NotFoundError('Пользователь не найден');
       }
       return res.send({ data: user });
     })
-    .catch(() => {
-      const err = new Error('Переданы некорректные данные при обновлении профиля');
-      err.statusCode = 400;
-      throw err;
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        throw new BadRequestError('Переданы некорректные данные');
+      }
+      return next(err);
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
@@ -158,9 +149,10 @@ module.exports.updateAvatar = (req, res) => {
       }
       return res.send(user);
     })
-    .catch(() => {
-      const err = new Error('Переданы некорректные данные при обновлении профиля');
-      err.statusCode = 400;
-      throw err;
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        throw new BadRequestError('Переданы некорректные данные');
+      }
+      return next(err);
     });
 };

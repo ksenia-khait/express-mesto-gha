@@ -15,12 +15,18 @@ const validateCreateUser = celebrate({
         .min(2)
         .max(30),
       avatar: Joi.string()
-        .pattern(regEx),
+        .custom((value, helpers) => {
+          if (regEx.test(value)) {
+            return value;
+          }
+          return helpers.message('Некорректный формат ссылки');
+        }),
       email: Joi.string()
         .required()
         .email(),
       password: Joi.string()
-        .required(),
+        .required()
+        .min(6),
     }),
 });
 
@@ -31,7 +37,8 @@ const validateLogin = celebrate({
         .required()
         .email(),
       password: Joi.string()
-        .required(),
+        .required()
+        .min(6),
     }),
 });
 
@@ -61,8 +68,12 @@ const validateUpdateAvatar = celebrate({
   body: Joi.object()
     .keys({
       avatar: Joi.string()
-        .required()
-        .pattern(regEx),
+        .custom((value, helpers) => {
+          if (regEx.test(value)) {
+            return value;
+          }
+          return helpers.message('Некорректный формат ссылки');
+        }),
     }),
 });
 
@@ -75,7 +86,12 @@ const validateCreateCard = celebrate({
         .max(30),
       link: Joi.string()
         .required()
-        .pattern(regEx),
+        .custom((value, helpers) => {
+          if (regEx.test(value)) {
+            return value;
+          }
+          return helpers.message('Некорректный формат ссылки');
+        }),
     }),
 });
 

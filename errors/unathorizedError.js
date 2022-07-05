@@ -1,7 +1,8 @@
-const UnauthorizedError = () => {
-  const error = new Error('Авторизуйтесь для доступа');
-  error.statusCode = 401;
-  throw error;
-};
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 401;
+  }
+}
 
 module.exports = UnauthorizedError;

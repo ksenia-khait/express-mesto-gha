@@ -1,7 +1,8 @@
-const ConflictError = () => {
-  const error = new Error('Авторизуйтесь для доступа');
-  error.statusCode = 409;
-  throw error;
-};
+class ConflictError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 409;
+  }
+}
 
 module.exports = ConflictError;

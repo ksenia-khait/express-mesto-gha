@@ -2,8 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 // const validator = require('validator');
+const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const { isAuthorized } = require('./middlewares/isAuthorized');
+const { validateLogin, validateCreateUser } = require('./middlewares/validations');
+
 // const NotFoundError = require('./errors/notFoundError');
 
 const app = express();
@@ -14,14 +17,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.post('/', login);
-app.post('/', createUser);
+app.post('/', validateLogin, login);
+app.post('/', validateCreateUser, createUser);
 
 app.use('/', isAuthorized, require('./routes/users'));
 app.use('/', isAuthorized, require('./routes/cardss'));
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Страница не найдена' }));
 
+app.use(errors());
+
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (err.statusCode) {
     return res.status(err.statusCode).send({ message: err.message });
