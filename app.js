@@ -27,7 +27,7 @@ app.post('/', validateCreateUser, createUser);
 app.use('/', isAuthorized, require('./routes/users'));
 app.use('/', isAuthorized, require('./routes/cardss'));
 
-app.use('/', (req, res, next) => {
+app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
