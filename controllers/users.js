@@ -7,13 +7,13 @@ const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const ForbiddenError = require('../errors/forbiddenError');
 const UnauthorizedError = require('../errors/unathorizedError');
-const { generateToken } = require('../helpers/jwtt');
+const {generateToken} = require('../helpers/jwtt');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 8;
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -40,9 +40,11 @@ module.exports.createUser = (req, res) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         throw new ConflictError('Данный email уже занят');
       } else {
-        throw new UnauthorizedError('Необходима авторизация');
+        if (err.name === 'CastError' || err.name === 'ValidationError') {
+          return new BadRequestError('Переданы некорректные данные при создании пользователя');
+        }
+        return next(err);
       }
-      throw err;
     });
 };
 
@@ -57,7 +59,7 @@ module.exports.login = (req, res) => {
     throw new BadRequestError('Не передан email или пароль');
   }
   User
-    .findOne({ email })
+    .findOne({email})
     .then((user) => {
       if (!user) {
         throw new ForbiddenError('Не передан email или пароль');
@@ -71,10 +73,10 @@ module.exports.login = (req, res) => {
       if (!isPasswordCorrect) {
         throw new ForbiddenError('Не передан email или пароль');
       }
-      return generateToken({ email: user.email }, { expiresIn: '7d' });
+      return generateToken({email: user.email}, {expiresIn: '7d'});
     })
     .then((token) => {
-      res.send({ token });
+      res.send({token});
     });
 };
 
@@ -132,7 +134,7 @@ module.exports.updateProfile = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
       }
-      return res.send({ data: user });
+      return res.send({data: user});
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
@@ -143,9 +145,9 @@ module.exports.updateProfile = (req, res, next) => {
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
+  const {avatar} = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, {avatar}, {new: true})
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
