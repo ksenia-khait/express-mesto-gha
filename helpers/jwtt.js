@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 const SECRET_KEY = 'very-secret-key';
 
 const generateToken = (payload) => {
@@ -6,7 +7,7 @@ const generateToken = (payload) => {
 };
 
 const checkToken = (token) => {
-  return jwt.veryfy(token, SECRET_KEY, { expiresIn: '7d' });
+  return jwt.verify(token, SECRET_KEY, { expiresIn: '7d' });
 };
 
 module.exports = { generateToken, checkToken };

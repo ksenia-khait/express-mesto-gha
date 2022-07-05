@@ -33,6 +33,7 @@ app.use((err, req, res, next) => {
   return res.status(500).send({ message: 'Что-то пошло не так' });
 });
 
-app.listen(PORT, () => {
-  console.log('started on', PORT);
-});
+app.listen(PORT,
+  () => {
+    console.log('started on', PORT);
+  });
