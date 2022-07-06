@@ -3,7 +3,7 @@ const {
   Joi,
 } = require('celebrate');
 
-const { regEx } = require('../constants/constants');
+const { regExLink, regExEmail } = require('../constants/constants');
 
 const validateCreateUser = celebrate({
   body: Joi.object()
@@ -16,14 +16,14 @@ const validateCreateUser = celebrate({
         .max(30),
       avatar: Joi.string()
         .custom((value, helpers) => {
-          if (regEx.test(value)) {
+          if (regExLink.test(value)) {
             return value;
           }
           return helpers.message({ message: 'Некорректный формат ссылки' });
         }),
       email: Joi.string()
         .required()
-        .email(),
+        .regex(regExEmail),
       password: Joi.string()
         .required()
         .min(8),
@@ -69,7 +69,7 @@ const validateUpdateAvatar = celebrate({
     .keys({
       avatar: Joi.string()
         .custom((value, helpers) => {
-          if (regEx.test(value)) {
+          if (regExLink.test(value)) {
             return value;
           }
           return helpers.message({ message: 'Некорректный формат ссылки' });
@@ -87,7 +87,7 @@ const validateCreateCard = celebrate({
       link: Joi.string()
         .required()
         .custom((value, helpers) => {
-          if (regEx.test(value)) {
+          if (regExLink.test(value)) {
             return value;
           }
           return helpers.message({ message: 'Некорректный формат ссылки' });
