@@ -19,7 +19,7 @@ const isAuthorized = (req, res, next) => {
         next();
       });
   } catch (err) {
-    throw new UnauthorizedError('Необходимо пройти аторизацию');
+    next(new UnauthorizedError('Необходимо пройти аторизацию'));
   }
 };
 
