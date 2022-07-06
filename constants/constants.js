@@ -1,3 +1,6 @@
-const regEx = /^https?:\/\/(www\.)?([-a-z0-9_])*\.([a-z0-9]){2,3}\/?([a-z0-9\-._~:\/?#[\]@!\$&'()*+,;=]?)*/;
-
-module.exports = regEx;
+const regExLink = /http(s?):\/\/(www\.)?[0-9a-zA-Z-]+\.[a-zA-Z]+([0-9a-zA-Z-._~:?#[\]@!$&'()*+,;=]+)/;
+const regExEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+module.exports = {
+  regExLink,
+  regExEmail,
+};

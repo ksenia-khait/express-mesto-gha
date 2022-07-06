@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 // const bcrypt = require('bcryptjs');
 const validator = require('validator');
 // const NotAuthorizedError = require('../errors/unathorizedError');
+const {
+  regExLink,
+  regExEmail,
+} = require('../constants/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,7 +25,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     name: 'Картинка',
     validate: {
-      validator: (v) => validator.isURL(v),
+      validator: (v) => validator.regExLink(v),
       message: 'Неверно указан формат ссылки',
     },
   },
@@ -30,7 +34,7 @@ const userSchema = new mongoose.Schema({
     require: true,
     unique: true,
     validate: {
-      validator: (v) => validator.isEmail(v),
+      validator: (v) => validator.regExEmail(v),
       message: () => 'Неверно указан адрес почты',
     },
   },
