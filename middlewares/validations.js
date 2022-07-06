@@ -3,7 +3,7 @@ const {
   Joi,
 } = require('celebrate');
 
-const { regExLink, regExEmail } = require('../constants/constants');
+const { regExLink } = require('../constants/constants');
 
 const validateCreateUser = celebrate({
   body: Joi.object()
@@ -23,10 +23,10 @@ const validateCreateUser = celebrate({
         }),
       email: Joi.string()
         .required()
-        .regex(regExEmail),
+        .email(),
       password: Joi.string()
         .required()
-        .min(8),
+        .min(6),
     }),
 });
 

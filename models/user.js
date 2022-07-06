@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     require: true,
     unique: true,
     validate: {
-      validator: (v) => validator.regExEmail(v),
+      validator: (v) => validator.isEmail(v),
       message: () => 'Неверно указан адрес почты',
     },
   },
