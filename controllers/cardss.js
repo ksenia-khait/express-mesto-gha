@@ -28,9 +28,9 @@ module.exports.createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные для постановки/снятии лайка');
+        next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
       }
-      return next(err);
+      next(err);
     });
 };
 
