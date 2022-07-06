@@ -9,16 +9,16 @@ const {
 
 const {
   validateGetUserById,
-  validateUpdateProfile,
-  validateUpdateAvatar,
+  // validateUpdateProfile,
+  // validateUpdateAvatar,
 } = require('../middlewares/validations');
 
 router.get('/users', getUser);
 router.get('/users/:userId', validateGetUserById, getUserById);
 // router.post('/users', createUser);
 
-router.patch('/users/me', validateUpdateProfile, updateProfile);
-router.patch('/users/me/avatar', validateUpdateAvatar, updateAvatar);
+router.patch('/users/me', updateProfile);
+router.patch('/users/me/avatar', updateAvatar);
 
 // router.post('/signin', login);
 // router.post('/signup', createUser);

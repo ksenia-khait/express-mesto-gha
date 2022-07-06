@@ -39,7 +39,7 @@ module.exports.createUser = (req, res, next) => {
       name,
       about,
       avatar,
-      email
+      email,
     }))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
