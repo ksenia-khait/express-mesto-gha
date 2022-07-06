@@ -6,7 +6,7 @@ const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const ForbiddenError = require('../errors/forbiddenError');
-// const UnauthorizedError = require('../errors/unathorizedError');
+const UnauthorizedError = require('../errors/unathorizedError');
 const { generateToken } = require('../helpers/jwtt');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
@@ -35,11 +35,12 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then(() => res.status(200).send({
+    .then((user) => res.status(200).send({
       name,
       about,
       avatar,
       email,
+      _id: user._id,
     }))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
@@ -67,7 +68,7 @@ module.exports.login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new ForbiddenError('Не передан email или пароль');
+        throw new UnauthorizedError('Не передан email или пароль');
       }
       return Promise.all([
         user,
