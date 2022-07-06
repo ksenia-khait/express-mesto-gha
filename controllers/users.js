@@ -6,7 +6,7 @@ const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const ForbiddenError = require('../errors/forbiddenError');
-const UnauthorizedError = require('../errors/unathorizedError');
+// const UnauthorizedError = require('../errors/unathorizedError');
 const { generateToken } = require('../helpers/jwtt');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
@@ -38,16 +38,16 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        throw new ConflictError('Данный email уже занят');
+        next(new ConflictError('Данный email уже занят'));
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       next(err);
     });
 };
 
 // eslint-disable-next-line consistent-return
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const {
     email,
     password,
@@ -58,6 +58,7 @@ module.exports.login = (req, res) => {
   }
   User
     .findOne({ email })
+    .select('+password')
     .then((user) => {
       if (!user) {
         throw new ForbiddenError('Не передан email или пароль');
@@ -75,6 +76,9 @@ module.exports.login = (req, res) => {
     })
     .then((token) => {
       res.send({ token });
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
@@ -82,7 +86,9 @@ module.exports.getUser = (req, res, next) => {
   User.find({})
     .then((user) => res.status(200)
       .send(user))
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports.getAuthedUserInfo = (req, res, next) => {
@@ -93,7 +99,9 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports.getUserById = (req, res, next) => {
@@ -106,9 +114,9 @@ module.exports.getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return new BadRequestError('Переданы некорректные данные при создании пользователя');
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
-      return next(err);
+      next(err);
     });
 };
 
@@ -136,9 +144,9 @@ module.exports.updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
-      return next(err);
+      next(err);
     });
 };
 
@@ -154,8 +162,8 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
-      return next(err);
+      next(err);
     });
 };
