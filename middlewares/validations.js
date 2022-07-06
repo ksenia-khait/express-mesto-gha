@@ -105,6 +105,21 @@ const validateCardId = celebrate({
     }),
 });
 
+const validateGetAuthedUserInfo = celebrate({
+  body: Joi.object()
+    .keys({
+      name: Joi.string().required().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string()
+        .custom((value, helpers) => {
+          if (regExLink.test(value)) {
+            return value;
+          }
+          return helpers.message({ message: 'Некорректный формат ссылки' });
+        }),
+    }),
+});
+
 module.exports = {
   validateCreateUser,
   validateLogin,
@@ -113,4 +128,5 @@ module.exports = {
   validateUpdateAvatar,
   validateCreateCard,
   validateCardId,
+  validateGetAuthedUserInfo,
 };
