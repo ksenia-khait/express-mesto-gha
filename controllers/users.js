@@ -35,7 +35,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then(() => res.status(200).send(name, about, avatar, email,))
+    .then(() => res.status(200).send(name, about, avatar, email))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         next(new ConflictError('Данный email уже занят'));
