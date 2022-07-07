@@ -15,22 +15,22 @@ module.exports.createCard = (req, res, next) => {
     name,
     link,
   } = req.body;
-  const likes = [];
+  const owner = req.user._id;
   Card.create({
     name,
     link,
-    owner: req.user._id,
-    likes,
+    owner,
   })
     .then((card) => {
       res.status(200)
-        .send(card);
+        .send({name: card.name, link: card.link, owner: card.owner, _id: card._id});
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -57,13 +57,13 @@ module.exports.deleteCard = (req, res, next) => {
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
+    {$addToSet: {likes: req.user._id}},
+    {new: true},
   )
     .orFail(() => new NotFoundError('Передан несуществующий _id карточки'))
     .then((card) => {
       res.status(200)
-        .send({ data: card });
+        .send({data: card});
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -76,15 +76,15 @@ module.exports.likeCard = (req, res, next) => {
 module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
+    {$pull: {likes: req.user._id}},
+    {new: true},
   )
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки');
       }
       return res.status(200)
-        .send({ data: card });
+        .send({data: card});
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
