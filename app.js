@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const { isAuthorized } = require('./middlewares/isAuthorized');
-const { validateLogin, validateCreateUser} = require('./middlewares/validations');
+const { validateLogin, validateCreateUser } = require('./middlewares/validations');
 const NotFoundError = require('./errors/notFoundError');
 
 const app = express();
@@ -21,7 +21,7 @@ app.post('/signup', validateCreateUser, createUser);
 app.use('/', isAuthorized, require('./routes/users'));
 app.use('/', isAuthorized, require('./routes/cardss'));
 
-app.use('***', (req, res, next) => {
+app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 

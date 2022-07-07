@@ -24,19 +24,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     name: 'Картинка',
-    validate: {
-      validator: (v) => validator.regExLink(v),
-      message: 'Неверно указан формат ссылки',
-    },
+    // validate: {
+    //   validator: (v) => validator.regExLink(v),
+    //   message: 'Неверно указан формат ссылки',
+    // },
   },
   email: {
     type: String,
     require: true,
     unique: true,
-    validate: {
-      validator: (v) => validator.isEmail(v),
-      message: () => 'Неверно указан адрес почты',
-    },
+    // validate: {
+    //   validator: (v) => validator.isEmail(v),
+    //   message: () => 'Неверно указан адрес почты',
+    // },
   },
   password: {
     type: String,
