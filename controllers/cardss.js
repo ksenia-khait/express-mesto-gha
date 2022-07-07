@@ -41,11 +41,9 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(() => next(new NotFoundError('Карточка с указанным видом _id не найдена')))
+    .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
     .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Передан несуществующий _id карточки'));
-      } else if (card.owner.toString() !== req.user._id) {
+      if (!card.owner.equals(req.user._id)) {
         next(new ForbiddenError('Вы не можете удалять чужие карточки'));
       } else {
         Card.findByIdAndRemove(req.params.cardId)
