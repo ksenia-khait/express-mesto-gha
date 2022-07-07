@@ -44,14 +44,14 @@ module.exports.deleteCard = (req, res, next) => {
       } else {
         return Card.findByIdAndRemove(req.params.cardId).then((c) => res.send(c));
       }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
-      } else {
-        next(err);
-      }
     });
+    // .catch((err) => {
+    //   if (err.name === 'CastError' || err.name === 'ValidationError') {
+    //     next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+    //   } else {
+    //     next(err);
+    //   }
+    // });
 };
 
 module.exports.likeCard = (req, res, next) => {
