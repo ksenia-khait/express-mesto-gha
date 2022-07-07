@@ -18,6 +18,6 @@ router.get('/users', getUser);
 router.get('/users/:userId', validateGetUserById, getUserById);
 router.get('/users/me', validateGetAuthedUserInfo, getAuthedUserInfo);
 router.patch('/users/me', validateUpdateProfile, updateProfile);
-router.patch('/users/me/avatar', validateUpdateProfile, updateAvatar);
+router.patch('/users/me/avatar', validateUpdateAvatar, updateAvatar);
 
 module.exports = router;

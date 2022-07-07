@@ -2,15 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const {
-  createUser,
-  login,
-} = require('./controllers/users');
+const { createUser, login } = require('./controllers/users');
 const { isAuthorized } = require('./middlewares/isAuthorized');
-const {
-  validateLogin,
-  validateCreateUser,
-} = require('./middlewares/validations');
+const { validateLogin, validateCreateUser} = require('./middlewares/validations');
 const NotFoundError = require('./errors/notFoundError');
 
 const app = express();
