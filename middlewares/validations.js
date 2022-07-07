@@ -108,8 +108,13 @@ const validateCardId = celebrate({
 const validateGetAuthedUserInfo = celebrate({
   body: Joi.object()
     .keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().min(2).max(30),
+      name: Joi.string()
+        .required()
+        .min(2)
+        .max(30),
+      about: Joi.string()
+        .min(2)
+        .max(30),
       avatar: Joi.string()
         .custom((value, helpers) => {
           if (!regExLink.test(value)) {
