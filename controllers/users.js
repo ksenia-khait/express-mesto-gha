@@ -35,21 +35,21 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(200).send({
-      name,
-      about,
-      avatar,
-      email,
-      _id: user._id,
-    }))
+    .then((user) => res.status(200)
+      .send({
+        name,
+        about,
+        avatar,
+        email,
+        _id: user._id,
+      }))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         next(new ConflictError('Данный email уже занят'));
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-      } else {
-        next(err);
       }
+      next(err);
     });
 };
 
