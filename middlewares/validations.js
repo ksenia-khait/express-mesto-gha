@@ -26,7 +26,7 @@ const validateCreateUser = celebrate({
         .email(),
       password: Joi.string()
         .required()
-        .min(6),
+        .min(8),
     }),
 });
 
@@ -38,7 +38,7 @@ const validateLogin = celebrate({
         .email(),
       password: Joi.string()
         .required()
-        .min(6),
+        .min(8),
     }),
 });
 
