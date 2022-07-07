@@ -66,7 +66,7 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new NotFoundError('Передан несуществующий _id карточки'))
+    .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
     .then((card) => {
       res.status(200)
         .send({ data: card });
@@ -85,13 +85,10 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
-      }
-      return res.status(200)
-        .send({ data: card });
-    })
+    .populate('likes')
+    .populate('owner')
+    .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
