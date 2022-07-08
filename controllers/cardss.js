@@ -25,12 +25,10 @@ module.exports.createCard = (req, res, next) => {
   })
     .then((card) => res.status(200)
       .send({
-        card: {
-          name: card.name,
-          link: card.link,
-          likes: card.likes,
-          owner: card.owner,
-        },
+        name: card.name,
+        link: card.link,
+        likes: card.likes,
+        owner: card.owner,
       }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
