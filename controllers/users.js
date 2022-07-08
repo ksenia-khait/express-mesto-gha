@@ -37,11 +37,11 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => res.status(200 || 201)
       .send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-        _id: user._id,
+        user: {
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+        },
       }))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
@@ -99,7 +99,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getAuthedUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
@@ -115,7 +115,7 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
@@ -136,7 +136,7 @@ module.exports.updateProfile = (req, res, next) => {
     about,
   } = req.body;
   User.findByIdAndUpdate(
-    req.user._id,
+    req.params.userId,
     {
       name,
       about,
@@ -162,7 +162,7 @@ module.exports.updateProfile = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, {
+  User.findByIdAndUpdate(req.params.userId, { avatar }, {
     new: true,
     runValidators: true,
   })
