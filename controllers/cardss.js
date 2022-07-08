@@ -24,7 +24,13 @@ module.exports.createCard = (req, res, next) => {
     likes,
   })
     .then((card) => res.status(200)
-      .send({ card }))
+      .send({
+        card: {
+          name: card.name,
+          link: card.link,
+          likes: card.likes,
+        },
+      }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));

@@ -18,9 +18,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.post('/signin', validateLogin, login);
 app.post('/signup', validateCreateUser, createUser);
 
-app.use(isAuthorized);
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cardss'));
+app.use('/', isAuthorized, require('./routes/users'));
+app.use('/', isAuthorized, require('./routes/cardss'));
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
