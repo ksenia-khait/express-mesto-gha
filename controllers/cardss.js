@@ -14,22 +14,15 @@ module.exports.createCard = (req, res, next) => {
   const {
     name,
     link,
-    likes = [],
   } = req.body;
   const owner = req.user._id;
   Card.create({
     name,
     link,
     owner,
-    likes,
   })
     .then((card) => res.status(200)
-      .send({
-        name: card.name,
-        link: card.link,
-        likes: card.likes,
-        owner: card.owner,
-      }))
+      .send({ card }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
@@ -40,11 +33,11 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.user._id)
+  Card.findById(req.params.cardId)
     .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
     .then((card) => {
       if (card.owner._id.toString() !== req.user._id.toString()) {
-        next(new ForbiddenError('Вы не можете удалять чужие карточки'));
+        throw new ForbiddenError('Вы не можете удалять чужие карточки');
       } else {
         Card.findByIdAndRemove(req.params.cardId)
           .then(() => res.send({ data: card }))
