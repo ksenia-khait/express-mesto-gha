@@ -5,7 +5,7 @@ const UnauthorizedError = require('../errors/unathorizedError');
 const isAuthorized = (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth) {
-    throw new UnauthorizedError('Необходимо пройти аторизацию');
+    throw new UnauthorizedError('Необходимо пройти авторизацию');
   }
   const token = auth.replace('Bearer ', '');
   try {
@@ -19,7 +19,7 @@ const isAuthorized = (req, res, next) => {
         return next();
       });
   } catch (err) {
-    next(new UnauthorizedError('Необходимо пройти аторизацию'));
+    next(new UnauthorizedError('Необходимо пройти авторизацию'));
   }
 };
 
