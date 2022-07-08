@@ -136,7 +136,7 @@ module.exports.updateProfile = (req, res, next) => {
     about,
   } = req.body;
   User.findByIdAndUpdate(
-    req.user._id,
+    req.params.userId,
     {
       name,
       about,
@@ -162,7 +162,7 @@ module.exports.updateProfile = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, {
+  User.findByIdAndUpdate(req.params.userId, { avatar }, {
     new: true,
     runValidators: true,
   })
