@@ -99,7 +99,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getAuthedUserInfo = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
@@ -115,7 +115,7 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
@@ -136,7 +136,7 @@ module.exports.updateProfile = (req, res, next) => {
     about,
   } = req.body;
   User.findByIdAndUpdate(
-    req.params.userId,
+    req.user._id,
     {
       name,
       about,
@@ -162,7 +162,7 @@ module.exports.updateProfile = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.params.userId, { avatar }, {
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
   })
