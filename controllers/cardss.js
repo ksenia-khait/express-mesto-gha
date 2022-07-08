@@ -17,11 +17,13 @@ module.exports.createCard = (req, res, next) => {
     likes = [],
   } = req.body;
   const owner = req.user._id;
+  const cardId = req.card._id;
   Card.create({
     name,
     link,
     owner,
     likes,
+    cardId,
   })
     .then((card) => res.status(200)
       .send({
@@ -30,6 +32,7 @@ module.exports.createCard = (req, res, next) => {
           link: card.link,
           likes: card.likes,
           owner: card.owner,
+          cardId: card.cardId,
         },
       }))
     .catch((err) => {
