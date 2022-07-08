@@ -79,7 +79,7 @@ module.exports.login = (req, res, next) => {
       if (!isPasswordCorrect) {
         throw new ForbiddenError('Не передан email или пароль');
       }
-      return generateToken({ email: user.email }, { expiresIn: '7d' });
+      return generateToken({ _id: user._id }, { expiresIn: '7d' });
     })
     .then((token) => {
       res.send({ token });
