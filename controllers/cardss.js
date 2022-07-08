@@ -26,8 +26,8 @@ module.exports.createCard = (req, res, next) => {
         .send({
           name: card.name,
           link: card.link,
-          owner: card.owner,
-          // _id: card._id,
+          // owner: card.owner,
+          _id: card._id,
         });
     })
     .catch((err) => {
