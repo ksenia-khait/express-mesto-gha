@@ -4,11 +4,11 @@ const User = require('../models/user');
 const UnauthorizedError = require('../errors/unathorizedError');
 
 module.exports.auth = (req, res, next) => {
-  const { auth } = req.headers;
-  if (!auth || !auth.startsWith('Bearer ')) {
+  const { authorization } = req.headers;
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new UnauthorizedError('Необходимо пройти авторизацию');
   }
-  const token = auth.replace('Bearer ', '');
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
