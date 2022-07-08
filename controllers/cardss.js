@@ -36,13 +36,12 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
     .then((card) => {
-      if (card.owner._id.toString() !== req.user._id.toString()) {
+      if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Вы не можете удалять чужие карточки');
-      } else {
-        Card.findByIdAndRemove(req.params.cardId)
-          .then(() => res.send({ data: card }))
-          .catch(next);
       }
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.send({ data: card }))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
