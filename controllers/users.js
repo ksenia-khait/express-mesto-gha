@@ -38,11 +38,11 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => res.status(200 || 201)
       .send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-        _id: user._id,
+        user: {
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+        },
       }))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
@@ -60,14 +60,10 @@ module.exports.login = (req, res, next) => {
     email,
     password,
   } = req.body;
-
-  if (!email || !password) {
-    throw new BadRequestError('Не передан email или пароль');
-  }
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'very-secret-key', { expiresIn: '7d' });
-      res.status(200)
+      res.status(200 || 201)
         .send({ token });
     })
     .catch((err) => {
