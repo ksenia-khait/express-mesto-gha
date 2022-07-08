@@ -102,11 +102,14 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь с указанным _id не найден'));
+        throw new NotFoundError('Пользователь с указанным _id не найден');
       }
       return res.send(user);
     })
     .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      }
       next(err);
     });
 };
@@ -114,7 +117,7 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (user === null) {
+      if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
       }
       return res.send(user);
@@ -166,7 +169,6 @@ module.exports.updateAvatar = (req, res, next) => {
     .orFail(() => next(new NotFoundError('Пользователь с указанным _id не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
-      console.log('err');
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
       } else {
