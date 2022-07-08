@@ -64,20 +64,15 @@ module.exports.login = (req, res, next) => {
   if (!email || !password) {
     throw new BadRequestError('Не передан email или пароль');
   }
-  User
-    .findUserByCredentials({
-      email,
-      password,
-    })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'very-secret-key', { expiresIn: '7d' });
       res.status(200)
         .send({ token });
     })
     .catch((err) => {
-      if (err.statusCode === UnauthorizedError) {
-        next(err);
-        return;
+      if (err.statusCode === 401) {
+        next(new UnauthorizedError('Необходима авторизация'));
       }
       next(err);
     });
