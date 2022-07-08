@@ -8,7 +8,7 @@ const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const ForbiddenError = require('../errors/forbiddenError');
 const UnauthorizedError = require('../errors/unathorizedError');
-const { generateToken } = require('../helpers/jwtt');
+// const { generateToken } = require('../helpers/jwtt');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 8;
@@ -22,10 +22,6 @@ module.exports.createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-
-  if (!email || !password) {
-    throw new ForbiddenError('Не передан email или пароль');
-  }
 
   bcrypt
     .hash(password, SALT_ROUNDS)
