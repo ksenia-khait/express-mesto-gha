@@ -14,22 +14,17 @@ module.exports.createCard = (req, res, next) => {
   const {
     name,
     link,
+    likes = [],
   } = req.body;
   const owner = req.user._id;
   Card.create({
     name,
     link,
     owner,
+    likes,
   })
-    .then((card) => {
-      res.status(200)
-        .send({
-          name: card.name,
-          link: card.link,
-          owner: card.owner,
-          _id: card._id,
-        });
-    })
+    .then((card) => res.status(200)
+      .send({ card }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
