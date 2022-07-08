@@ -3,7 +3,7 @@ const { checkToken } = require('../helpers/jwtt');
 const User = require('../models/user');
 const UnauthorizedError = require('../errors/unathorizedError');
 
-module.exports = (req, res, next) => {
+module.exports.auth = (req, res, next) => {
   const { auth } = req.headers;
   if (!auth || !auth.startsWith('Bearer ')) {
     throw new UnauthorizedError('Необходимо пройти авторизацию');

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/isAuthorized');
+const { auth } = require('./middlewares/isAuthorized');
 const { validateLogin, validateCreateUser } = require('./middlewares/validations');
 const NotFoundError = require('./errors/notFoundError');
 
@@ -18,10 +18,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.post('/signin', validateLogin, login);
 app.post('/signup', validateCreateUser, createUser);
 
-app.use(auth);
-
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cardss'));
+app.use('/', auth, require('./routes/users'));
+app.use('/', auth, require('./routes/cardss'));
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
