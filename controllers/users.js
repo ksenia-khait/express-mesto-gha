@@ -102,7 +102,7 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь с указанным _id не найден');
+        next(new NotFoundError('Пользователь с указанным _id не найден'));
       }
       return res.send(user);
     })
