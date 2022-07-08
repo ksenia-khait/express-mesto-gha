@@ -16,7 +16,7 @@ const isAuthorized = (req, res, next) => {
           return next(new UnauthorizedError('Необходимо пройти аторизацию'));
         }
         req.user = { id: user._id };
-        next();
+        return next();
       });
   } catch (err) {
     next(new UnauthorizedError('Необходимо пройти аторизацию'));

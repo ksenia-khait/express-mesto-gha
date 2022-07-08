@@ -35,13 +35,13 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
+  Card.findById(req.user._id)
     .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
     .then((card) => {
-      if (!card.owner.equals(req.user._id)) {
+      if (card.owner._id.toString() !== req.user._id.toString()) {
         next(new ForbiddenError('Вы не можете удалять чужие карточки'));
       } else {
-        Card.findByIdAndRemove(req.params.cardId)
+        Card.findByIdAndRemove(req.user._id)
           .then(() => res.send({ data: card }))
           .catch(next);
       }
