@@ -17,13 +17,11 @@ module.exports.createCard = (req, res, next) => {
     likes = [],
   } = req.body;
   const owner = req.user._id;
-  const cardId = req.card._id;
   Card.create({
     name,
     link,
     owner,
     likes,
-    cardId,
   })
     .then((card) => res.status(200)
       .send({
@@ -32,7 +30,6 @@ module.exports.createCard = (req, res, next) => {
           link: card.link,
           likes: card.likes,
           owner: card.owner,
-          cardId: card.cardId,
         },
       }))
     .catch((err) => {
@@ -51,7 +48,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner._id.toString() !== req.user._id.toString()) {
         next(new ForbiddenError('Вы не можете удалять чужие карточки'));
       } else {
-        Card.findByIdAndRemove(req.user._id)
+        Card.findByIdAndRemove(req.params.cardId)
           .then(() => res.send({ data: card }))
           .catch(next);
       }
