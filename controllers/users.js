@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
@@ -64,27 +65,20 @@ module.exports.login = (req, res, next) => {
     throw new BadRequestError('Не передан email или пароль');
   }
   User
-    .findOne({ email })
-    .select('+password')
+    .findUserByCredentials({
+      email,
+      password,
+    })
     .then((user) => {
-      if (!user) {
-        throw new UnauthorizedError('Не передан email или пароль');
-      }
-      return Promise.all([
-        user,
-        bcrypt.compare(password, user.password),
-      ]);
-    })
-    .then(([user, isPasswordCorrect]) => {
-      if (!isPasswordCorrect) {
-        throw new ForbiddenError('Не передан email или пароль');
-      }
-      return generateToken({ _id: user._id }, { expiresIn: '7d' });
-    })
-    .then((token) => {
-      res.send({ token });
+      const token = jwt.sign({ _id: user._id }, 'very-secret-key', { expiresIn: '7d' });
+      res.status(200)
+        .send({ token });
     })
     .catch((err) => {
+      if (err.statusCode === UnauthorizedError) {
+        next(err);
+        return;
+      }
       next(err);
     });
 };
