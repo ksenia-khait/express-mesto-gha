@@ -29,6 +29,7 @@ module.exports.createCard = (req, res, next) => {
           name: card.name,
           link: card.link,
           likes: card.likes,
+          owner: card.owner,
         },
       }))
     .catch((err) => {
