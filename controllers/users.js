@@ -99,7 +99,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getAuthedUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
