@@ -56,9 +56,11 @@ const validateUpdateProfile = celebrate({
   body: Joi.object()
     .keys({
       name: Joi.string()
+        .required()
         .min(2)
         .max(30),
       about: Joi.string()
+        .required()
         .min(2)
         .max(30),
     }),
@@ -68,6 +70,7 @@ const validateUpdateAvatar = celebrate({
   body: Joi.object()
     .keys({
       avatar: Joi.string()
+        .required()
         .custom((value, helpers) => {
           if (!regExLink.test(value)) {
             return helpers.error('Некорректный формат ссылки');
@@ -105,25 +108,25 @@ const validateCardId = celebrate({
     }),
 });
 
-const validateGetAuthedUserInfo = celebrate({
-  body: Joi.object()
-    .keys({
-      name: Joi.string()
-        .required()
-        .min(2)
-        .max(30),
-      about: Joi.string()
-        .min(2)
-        .max(30),
-      avatar: Joi.string()
-        .custom((value, helpers) => {
-          if (!regExLink.test(value)) {
-            return helpers.error('Некорректный формат ссылки');
-          }
-          return value;
-        }),
-    }),
-});
+// const validateGetAuthedUserInfo = celebrate({
+//   body: Joi.object()
+//     .keys({
+//       name: Joi.string()
+//         .required()
+//         .min(2)
+//         .max(30),
+//       about: Joi.string()
+//         .min(2)
+//         .max(30),
+//       avatar: Joi.string()
+//         .custom((value, helpers) => {
+//           if (!regExLink.test(value)) {
+//             return helpers.error('Некорректный формат ссылки');
+//           }
+//           return value;
+//         }),
+//     }),
+// });
 
 module.exports = {
   validateCreateUser,
@@ -133,5 +136,4 @@ module.exports = {
   validateUpdateAvatar,
   validateCreateCard,
   validateCardId,
-  validateGetAuthedUserInfo,
 };

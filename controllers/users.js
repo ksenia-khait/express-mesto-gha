@@ -30,7 +30,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(200 || 201)
+    .then((user) => res.status(201)
       .send({
         name: user.name,
         about: user.about,
@@ -39,7 +39,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         next(new ConflictError('Данный email уже занят'));
-      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       next(err);
@@ -55,7 +55,7 @@ module.exports.login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'very-secret-key', { expiresIn: '7d' });
-      res.status(200 || 201)
+      res.status(200)
         .send({ token });
     })
     .catch((err) => {
@@ -66,10 +66,10 @@ module.exports.login = (req, res, next) => {
     });
 };
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.status(200)
-      .send(user))
+    .then((users) => res.status(200)
+      .send(users))
     .catch((err) => {
       next(err);
     });
@@ -84,8 +84,8 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные при введении данных'));
       }
       next(err);
     });
@@ -100,8 +100,8 @@ module.exports.getUserById = (req, res, next) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные при поиске пользователя'));
       }
       next(err);
     });
