@@ -60,7 +60,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.statusCode === 401) {
-        next(new UnauthorizedError('Необходима авторизация'));
+        next(new UnauthorizedError('Передан некорректный email или пароль'));
       }
       next(err);
     });
@@ -143,7 +143,7 @@ module.exports.updateAvatar = (req, res, next) => {
     new: true,
     runValidators: true,
   })
-    .orFail(() => next(new NotFoundError('Пользователь с указанным _id не найден')))
+    .orFail(new NotFoundError('Пользователь с указанным _id не найден'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {

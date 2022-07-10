@@ -34,7 +34,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
+    .orFail(new NotFoundError('Передан несуществующий _id карточки'))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Вы не можете удалять чужие карточки');
@@ -58,7 +58,7 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => next(new NotFoundError('Передан несуществующий _id карточки')))
+    .orFail(new NotFoundError('Передан несуществующий _id карточки'))
     .then((card) => {
       res.status(200)
         .send({ data: card });
