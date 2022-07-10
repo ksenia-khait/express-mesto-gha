@@ -41,8 +41,9 @@ module.exports.createUser = (req, res, next) => {
         next(new ConflictError('Данный email уже занят'));
       } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -61,8 +62,9 @@ module.exports.login = (req, res, next) => {
     .catch((err) => {
       if (err.statusCode === 401) {
         next(new UnauthorizedError('Передан некорректный email или пароль'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -86,8 +88,9 @@ module.exports.getAuthedUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при введении данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -102,8 +105,9 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при поиске пользователя'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -132,8 +136,9 @@ module.exports.updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
