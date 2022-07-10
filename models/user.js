@@ -5,6 +5,7 @@ const {
   isEmail,
 } = require('validator');
 const NotAuthorizedError = require('../errors/unathorizedError');
+const { regExLink } = require('../constants/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -24,7 +25,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     name: 'Картинка',
     validate: {
-      validator: (v) => isURL(v, { required_protocol: true }),
+      validator: (v) => regExLink.test(v),
       message: 'Неверно указан формат ссылки',
     },
   },
