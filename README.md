@@ -1,32 +1,36 @@
-[![Tests 13 sprint](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml) 
-[![Tests 14 sprint](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg?branch=main)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
+# Mesto-React
 
-## Настройка бейджей статуса тестов
-Перед началом работы над проектом рекомендуется исправить бейджи, отражающие статус прохождения тестов.
-Для этого замените разметку бейджей на следующий фрагмент, подставив вместо `${имя_пользователя}` и `${имя_репозитория}` соответствующие значения.
+##### Данный проект выполнен в рамках учебного курса от Яндекс.Практикум. Учебный проект #13
 
-```
-[![Tests for sprint 13](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-13-sprint.yml) 
-
-[![Tests for sprint 14](https://github.com/ksenia-khait//express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/ksenia-khait/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-```
-
+Описание: бекенд проекта Mesto на Express.js 
 
 ## Директории
 
 `/routes` — папка с файлами роутера  
 `/controllers` — папка с файлами контроллеров пользователя и карточки   
 `/models` — папка с файлами описания схем пользователя и карточки  
-  
-Остальные директории вспомогательные, создаются при необходимости разработчиком
 
-## Запуск проекта
 
-`npm run start` — запускает сервер   
-`npm run dev` — запускает сервер с hot-reload
+### Стек Технологий: 
++ MongoDB
++ Node.js
++ Express.js
 
-https://github.com/ksenia-khait/express-mesto-gha/settings
+### Установка
+
+Для запуска на локальной машине необходимо
+
+1. Установить npm зависимости:
+
+##### ` npm install `
+
+2. Запустить в режиме разработки:
+
+##### ` npm start `
+
+Если все прошло успешно, проект будет запущен на
+
+##### ` http://localhost:3000 `
 
 Другие этапы проекта Mesto:
 1. [mesto](https://github.com/ksenia-khait/mesto) - проект Mesto на ванильном JS
